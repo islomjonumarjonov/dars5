@@ -1,43 +1,52 @@
-// import { useFetch } from "./hooks/useFetch";
-import "./App.css";
+import React from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import RootLayout from "./layout/RootLayout";
+import ProtectedRoutes from "./components/ProtectedRoutes";
 import { useGlobalContext } from "./hooks/useGlobalContext";
-import { useRef } from "react";
 
-function App() {
-  const inputValue = useRef();
-  const { counter, dispatch } = useGlobalContext();
-  // console.log("s");
-  // const { data, error, isPending } = useFetch(
-  //   "https://jsonplaceholder.typicode.com/todos"
-  // );
-  // console.log(data && data);
+//pages
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(inputValue.current.value);
-    dispatch({ type: "ADD_INCREMENT", payload: +inputValue.current.value });
-    inputValue.current.value = "";
-  };
+function App(user) {
+  // const { user } = useGlobalContext();
 
-  const handleMinus = (e) => {
-    e.preventDefault();
-    console.log(inputValue.current.value);
-    dispatch({ type: "ADD_DECREMENT", payload: +inputValue.current.value });
-    inputValue.current.value = "";
-  };
-
-  return (
-    <div className="App">
-      <h1>{counter}</h1>
-      <button onClick={() => dispatch({ type: "INCREMENT" })}>+</button>
-      <button onClick={() => dispatch({ type: "DECREMENT" })}>-</button>
-      <form>
-        <button onClick={handleMinus}>MINUS</button>
-        <input ref={inputValue} type="number" />
-        <button onClick={handleSubmit}>PLUS</button>
-      </form>
-    </div>
-  );
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: (
+        <ProtectedRoutes user={user && false}>
+          <RootLayout />
+        </ProtectedRoutes>
+      ),
+      children: [
+        {
+          index: true,
+          element: <Home />,
+        },
+        {
+          path: "about",
+          element: <About />,
+        },
+        {
+          path: "contact",
+          element: <Contact />,
+        },
+      ],
+    },
+    {
+      path: "login",
+      element: <Login />,
+    },
+    {
+      path: "signup",
+      element: <Signup />,
+    },
+  ]);
+  return <RouterProvider router={router} />;
 }
 
 export default App;
